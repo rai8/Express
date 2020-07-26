@@ -1,13 +1,22 @@
 const express = require("express")
 const path = require("path")
-
+const members = require("./Members")
 const app = express()
 
-//create a route
-app.get("/", (req, res) => {
-  /* res.send("<h1>Hello world !!</h1>") */
-  res.sendFile(path.join(__dirname, "public", "index.html"))
-})
+//creating a middleware
+
+const logger = (req, res, next) => {
+  console.log(`${req.protocol}://${req.get("host")}${req.originalUrl}`)
+  next()
+}
+
+//initialize middleware
+app.use(logger)
+//creating a simple rest api--- gets all members
+app.get("/api/members", (req, res) => res.json(members))
+
+//setting a static folder
+app.use(express.static(path.join(__dirname, "public")))
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
